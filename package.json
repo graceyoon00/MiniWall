@@ -1,0 +1,26 @@
+{
+  "name": "miniwall",
+  "version": "1.0.0",
+  "description": "MiniWall project for Cloud Computing module",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graceyoon00/MiniWall.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/graceyoon00/MiniWall/issues"
+  },
+  "homepage": "https://github.com/graceyoon00/MiniWall#readme",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^6.7.5",
+    "nodemon": "^2.0.20"
+  }
+}
