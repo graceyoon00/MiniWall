@@ -42,12 +42,12 @@ router.patch('/updatepost/:postId', verify, async (req, res) => {
     // Check if post exists
     const post = await Post.findOne({_id: req.params.postId})
     if(!post){
-        return res.status(400).send({message:'Post does not exist'})
+        return res.status(400).send({message:'You cannot edit a post that does not exist.'})
     }
 
     // Check if user is the owner of the post
     if(post.post_owner != req.user._id){
-        return res.status(400).send({message:'You are not the owner of this post'})
+        return res.status(400).send({message:'You cannot edit a post that is not yours.'})
     }
 
     // Update post
@@ -57,6 +57,32 @@ router.patch('/updatepost/:postId', verify, async (req, res) => {
             {$set: {post_title: req.body.post_title, post_description: req.body.post_description}}
         )
         res.send(updatedPost)
+    } catch(err) {
+        res.status(400).send({message:err})
+    }
+})
+
+/* Deleting a post, checking for the following:
+    - The user must be verified.
+    - The post must exist.
+    - The user must be the owner of the post.
+*/
+router.delete('/deletepost/:postId', verify, async (req, res) => {
+    // Check if post exists
+    const post = await Post.findOne({_id: req.params.postId})
+    if(!post){
+        return res.status(400).send({message:'You cannot delete a post that does not exist.'})
+    }
+
+    // Check if user is the owner of the post
+    if(post.post_owner != req.user._id){
+        return res.status(400).send({message:'You cannot delete a post that is not yours.'})
+    }
+
+    // Delete post
+    try {
+        const deletedPost = await Post.deleteOne({_id: req.params.postId})
+        res.send(deletedPost)
     } catch(err) {
         res.status(400).send({message:err})
     }
