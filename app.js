@@ -15,7 +15,6 @@ const postRoute = require('./routes/posts')
 app.use('/api/user', authRoute)
 app.use('/api/posts', postRoute)
 
-/* API endpoints */
 app.get('/', (req, res) => {
    res.send('Hello World');
 })

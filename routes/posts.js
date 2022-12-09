@@ -33,4 +33,33 @@ router.post('/makepost', verify, async (req, res) => {
     }
 })
 
+/* Updating a post, checking for the following:
+    - The user must be verified.
+    - The post must exist.
+    - The user must be the owner of the post.
+*/
+router.patch('/updatepost/:postId', verify, async (req, res) => {
+    // Check if post exists
+    const post = await Post.findOne({_id: req.params.postId})
+    if(!post){
+        return res.status(400).send({message:'Post does not exist'})
+    }
+
+    // Check if user is the owner of the post
+    if(post.post_owner != req.user._id){
+        return res.status(400).send({message:'You are not the owner of this post'})
+    }
+
+    // Update post
+    try {
+        const updatedPost = await Post.updateOne(
+            {_id: req.params.postId},
+            {$set: {post_title: req.body.post_title, post_description: req.body.post_description}}
+        )
+        res.send(updatedPost)
+    } catch(err) {
+        res.status(400).send({message:err})
+    }
+})
+
 module.exports = router
