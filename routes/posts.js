@@ -88,4 +88,18 @@ router.delete('/deletepost/:postId', verify, async (req, res) => {
     }
 })
 
+/* Getting all posts, checking for the following:
+    - The user must be verified.
+    - Posts are sorted by number of likes, the most liked post is first.
+    - If two posts have the same number of likes, the post that was created first is shown first.
+*/
+router.get('/getallposts', verify, async (req, res) => {
+    try {
+        const posts = await Post.find().sort({post_likes: -1, post_date: 1})
+        res.send(posts)
+    } catch(err) {
+        res.status(400).send({message:err})
+    }
+})
+
 module.exports = router
