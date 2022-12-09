@@ -1,13 +1,9 @@
-/* Post schema based on MiniPost app, modified according to project guidelines*/
+/* Post schema based on MiniPost app, modified according to project guidelines,
+   with the addition of likes and commends */
+
 const mongoose = require('mongoose')
 
 const postSchema = mongoose.Schema({
-    post_identifier:{
-        type: String,
-        require:true,
-        min:3,
-        max:128
-    },
     post_title:{
         type:String,
         require:true,
@@ -28,7 +24,15 @@ const postSchema = mongoose.Schema({
         require:true,
         min:6,
         max:1024,
+    },
+    like_count:{
+        type:Number,
+        default:0,
+    },
+    comment_count:{
+        type:Number,
+        default:0,
     }
 })
 
-module.exports = mongoose.model('Post', postSchema)
+module.exports = mongoose.model('posts', postSchema)

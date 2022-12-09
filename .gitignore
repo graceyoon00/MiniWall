@@ -1,0 +1,20 @@
+# Dependency directories
+node_modules/
+
+# parcel-bundler cache
+.cache/
+
+# Nuxt.js build / generate output
+dist/
+
+# Dotenv
+.env
+
+# Meta-information
+.DS_Store
+
+# Coverage directory
+coverage/
+
+# VSCode
+.vscode/
