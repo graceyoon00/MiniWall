@@ -88,4 +88,54 @@ router.delete('/deletepost/:postId', verify, async (req, res) => {
     }
 })
 
+/* Getting all posts, checking for the following:
+    - The user must be verified.
+    - Posts are sorted by number of likes, the most liked post is first.
+    - If two posts have the same number of likes, the post that was created first is shown first.
+*/
+router.get('/getposts', verify, async (req, res) => {
+    try {
+        const posts = await Post.find().sort({post_likes: -1, post_date: 1})
+        res.send(posts)
+    } catch(err) {
+        res.status(400).send({message:err})
+    }
+})
+
+/* Liking a post, checking for the following:
+    - The user must be verified.
+    - The post must exist.
+    - The user must not be the owner of the post.
+    - The user cannot like the same post twice.
+*/
+router.patch('/likepost/:postId', verify, async (req, res) => {
+    // Check if post exists
+    const post = await Post.findOne({_id: req.params.postId})
+    if(!post){
+        return res.status(400).send({message:'You cannot like a post that does not exist.'})
+    }
+
+    // Check if user is the owner of the post
+    if(post.post_owner == req.user._id){
+        return res.status(400).send({message:'You cannot like your own post.'})
+    }
+
+    // Check if user has already liked the post
+    if(post.post_likers.includes(req.user._id)){
+        return res.status(400).send({message:'You have already liked this post.'})
+    }
+
+    // Like post
+    try {
+        const likedPost = await Post.updateOne(
+            {_id: req.params.postId},
+            {$inc: {post_likes: 1}, $push: {post_likers: req.user._id}}
+        )
+        res.send(likedPost)
+    } catch(err) {
+        res.status(400).send({message:err})
+    }
+})
+
+
 module.exports = router
