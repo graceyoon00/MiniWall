@@ -24,7 +24,6 @@
 
    const postValidation = (data) => {
          const schemaValidation = joi.object({
-                post_identifier: joi.string().required().min(3).max(128),
                 post_title: joi.string().required().min(6).max(128),
                 post_description: joi.string().required().min(6).max(1024)
             })
@@ -33,7 +32,7 @@
 
     const commentValidation = (data) => {
         const schemaValidation = joi.object({
-            comment_description: joi.string().required().min(6).max(1024)
+            comment_content: joi.string().required().min(6).max(1024)
         })
         return schemaValidation.validate(data)
     }

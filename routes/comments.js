@@ -16,7 +16,7 @@ const {commentValidation} = require('../validations/validation')
     - The post must exist.
     - The user must not be the owner of the post.
 */
-router.post('/comment/:postId', verify, async (req, res) => {
+router.post('/makecomment/:postId', verify, async (req, res) => {
     // Check if post exists
     const post = await Post.findOne({_id: req.params.postId})
     if(!post){
@@ -36,9 +36,9 @@ router.post('/comment/:postId', verify, async (req, res) => {
 
     // Create new comment
     const comment = new Comment({
-        comment_description: req.body.comment_description,
-        comment_owner: req.user._id,
-        comment_post: req.params.postId
+        comment_post: req.params.postId,
+        comment_content: req.body.comment_content,
+        comment_user: req.user._id,
     })
     try {
         const savedComment = await comment.save()
@@ -60,7 +60,7 @@ router.patch('/updatecomment/:commentId', verify, async (req, res) => {
     }
 
     // Check if user is the owner of the comment
-    if(comment.comment_owner != req.user._id){
+    if(comment.comment_user != req.user._id){
         return res.status(400).send({message:'You cannot update a comment that is not yours.'})
     }
 
@@ -68,7 +68,7 @@ router.patch('/updatecomment/:commentId', verify, async (req, res) => {
     try {
         const updatedComment = await Comment.updateOne(
             {_id: req.params.commentId},
-            {$set: {comment_description: req.body.comment_description}}
+            {$set: {comment_content: req.body.comment_content}}
         )
         res.send(updatedComment)
     } catch(err) {
@@ -88,7 +88,7 @@ router.delete('/deletecomment/:commentId', verify, async (req, res) => {
     }
 
     // Check if user is the owner of the comment
-    if(comment.comment_owner != req.user._id){
+    if(comment.comment_user != req.user._id){
         return res.status(400).send({message:'You cannot delete a comment that is not yours.'})
     }
 
