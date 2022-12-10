@@ -90,4 +90,23 @@ router.put('/unlikepost/:postId', verify, async (req, res) => {
     }
 })
 
+/* Get the number of likes for a specific post, checking for the following: 
+   - The post must exist.
+*/
+router.get('/getlikes/:postId', async (req, res) => {
+    // Check if post exists
+    const post = await Post.findOne({_id: req.params.postId})
+    if(!post){
+        return res.status(400).send({message:'You cannot get the likes for a post that does not exist.'})
+    }
+
+    // Get the number of likes
+    try{
+        const likes = await Like.find({like_post: req.params.postId})
+        res.send({message:"This post has " + likes.length + " likes."})
+    }catch(err){
+        res.status(400).send({message:err})
+    }
+})
+
 module.exports = router
