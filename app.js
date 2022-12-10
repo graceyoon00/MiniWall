@@ -12,10 +12,12 @@ app.use(bodyParser.json())
 const authRoute = require('./routes/auth')
 const postRoute = require('./routes/posts')
 const commentRoute = require('./routes/comments')
+const likeRoute = require('./routes/likes')
 
 app.use('/api/user', authRoute)
 app.use('/api/posts', postRoute)
 app.use('/api/comments', commentRoute)
+app.use('/api/likes', likeRoute)
 
 app.get('/', (req, res) => {
    res.send('Hello World');

@@ -104,6 +104,7 @@ router.delete('/deletecomment/:commentId', verify, async (req, res) => {
 /* Getting all comments for a specific post, checking for the following:
     - The user must be verified.
     - The post must exist.
+    - The post must have at least one comment.
 */
 router.get('/getcomments/:postId', verify, async (req, res) => {
     // Check if post exists
@@ -112,6 +113,12 @@ router.get('/getcomments/:postId', verify, async (req, res) => {
         return res.status(400).send({message:'You cannot get comments for a post that does not exist.'})
     }
 
+    // Check if post has comments
+    const comments = await Comment.find({comment_post: req.params.postId})
+    if(comments.length == 0){
+        return res.status(400).send({message:'This post has no comments.'})
+    }
+    
     // Get comments
     try {
         const comments = await Comment.find({comment_post: req.params.postId})
