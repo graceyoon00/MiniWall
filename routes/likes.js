@@ -16,7 +16,7 @@ const Like = require('../models/Like')
 
     Then we update the post's like count.
 */
-router.post('/likepost/:postId', verify, async (req, res) => {
+router.put('/likepost/:postId', verify, async (req, res) => {
     // Check if post exists
     const post = await Post.findOne({_id: req.params.postId})
     if(!post){
@@ -29,79 +29,63 @@ router.post('/likepost/:postId', verify, async (req, res) => {
     }
 
     // Check if user has already liked the post
-    const like = await Like.findOne({like_post: req.params.postId, like_user: req.user._id})
+    const like = await Like.findOne({like_user: req.user._id, like_post: req.params.postId})
     if(like){
         return res.status(400).send({message:'You cannot like a post twice.'})
     }
 
-    // Create new like
+    // Like the post
     const newLike = new Like({
-        like_post: req.params.postId,
-        like_user: req.user._id
+        like_user: req.user._id,
+        like_post: req.params.postId
     })
-    try {
+
+    try{
         const savedLike = await newLike.save()
-        res.send(savedLike)
-    } catch(err) {
+        res.send({message:'You have liked this post successfully.'})
+    }catch(err){
         res.status(400).send({message:err})
     }
 
-    // Update post's like count
-    try {
-        const updatedPost = await Post.updateOne(
-            {_id: req.params.postId},
-            {$inc: {post_likes: 1}}
-        )
-        res.send(updatedPost)
-    }
-    catch(err) {
+    // Update the post's like count
+    try{
+        await Post.findOneAndUpdate({_id: req.params.postId}, {$inc: {like_count: 1}})
+    }catch(err){
         res.status(400).send({message:err})
     }
 })
 
 /* Unliking a post, checking for the following:
     - The user must be verified.
-    - The post must exist. 
-    - The user must not be the owner of the post.
+    - The post must exist.
     - The user must have liked the post.
-
-    Then we update the post's like count.
 */
-router.post('/unlikepost/:postId', verify, async (req, res) => {
+
+router.put('/unlikepost/:postId', verify, async (req, res) => {
     // Check if post exists
     const post = await Post.findOne({_id: req.params.postId})
     if(!post){
         return res.status(400).send({message:'You cannot unlike a post that does not exist.'})
     }
 
-    // Check if user is the owner of the post
-    if(post.post_owner == req.user._id){
-        return res.status(400).send({message:'You cannot unlike your own post.'})
-    }
-
-    // Check if user has already liked the post
-    const like = await Like.findOne({like_post: req.params.postId, like_user: req.user._id})
+    // Check if user has liked the post
+    const like = await Like.findOne({like_user: req.user._id, like_post: req.params.postId})
     if(!like){
-        return res.status(400).send({message:'You cannot unlike a post you have not liked.'})
+        return res.status(400).send({message:'You cannot unlike a post that you have not liked.'})
     }
 
-    // Delete like
-    try {
-        const deletedLike = await Like.deleteOne({like_post: req.params.postId, like_user: req.user._id})
-        res.send(deletedLike)
-    } catch(err) {
+    // Unlike
+    try{
+        await Like.deleteOne({like_user: req.user._id, like_post: req.params.postId})
+        res.send({message:'You have unliked this post successfully.'})
+    }catch(err){
         res.status(400).send({message:err})
     }
 
-    // Update post's like count
-    try {
-        const updatedPost = await Post.updateOne(
-            {_id: req.params.postId},
-            {$inc: {post_likes: -1}}
-        )
-        res.send(updatedPost)
-    }
-    catch(err) {
+    // Decrease the post's like count
+    try{
+        await Post.findOneAndUpdate({_id: req.params.postId}, {$inc: {like_count: -1}})
+    }catch(err){
         res.status(400).send({message:err})
     }
 })
