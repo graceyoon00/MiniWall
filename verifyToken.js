@@ -1,3 +1,7 @@
+/* This file handles token verification processes.
+   It checks if the user has the appropriate auth-token in their header when interacting with MiniWall.
+   It is based on the same file from MiniFilm-Auth. */
+
 const jsonwebtoken = require('jsonwebtoken')
 
 function auth(req, res, next){

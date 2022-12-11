@@ -8,3 +8,6 @@ npm install bcryptjs
 
 * JWT package for generating auth tokens
 npm install jsonwebtoken
+
+* token
+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

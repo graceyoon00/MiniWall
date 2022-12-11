@@ -42,7 +42,7 @@ router.put('/likepost/:postId', verify, async (req, res) => {
 
     try{
         const savedLike = await newLike.save()
-        res.send({message:'You have liked this post successfully.'})
+        res.send({savedLike, message:'You have liked this post successfully.'})
     }catch(err){
         res.status(400).send({message:err})
     }
@@ -91,6 +91,7 @@ router.put('/unlikepost/:postId', verify, async (req, res) => {
 })
 
 /* Get the number of likes for a specific post, checking for the following: 
+   - The user must be verified.
    - The post must exist.
 */
 router.get('/getlikes/:postId', verify, async (req, res) => {
