@@ -60,7 +60,6 @@ router.put('/likepost/:postId', verify, async (req, res) => {
     - The post must exist.
     - The user must have liked the post.
 */
-
 router.put('/unlikepost/:postId', verify, async (req, res) => {
     // Check if post exists
     const post = await Post.findOne({_id: req.params.postId})
